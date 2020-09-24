@@ -286,11 +286,11 @@ func TestClient_ListProjects_parseNullableFeatureFlags(t *testing.T) {
 func TestClient_EnableProject(t *testing.T) {
 	setup()
 	defer teardown()
-	mux.HandleFunc("/project/org-name/repo-name/enable", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/project/vcsType/org-name/repo-name/enable", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
 	})
 
-	err := client.EnableProject("org-name", "repo-name")
+	err := client.EnableProject("vcsType", "org-name", "repo-name")
 	if err != nil {
 		t.Errorf("Client.EnableProject() returned error: %v", err)
 	}
@@ -312,12 +312,12 @@ func TestClient_DisableProject(t *testing.T) {
 func TestClient_FollowProject(t *testing.T) {
 	setup()
 	defer teardown()
-	mux.HandleFunc("/project/org-name/repo-name/follow", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/project/vcsType/org-name/repo-name/follow", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
 		fmt.Fprint(w, `{"reponame": "repo-name"}`)
 	})
 
-	project, err := client.FollowProject("org-name", "repo-name")
+	project, err := client.FollowProject("vcsType", "org-name", "repo-name")
 	if err != nil {
 		t.Errorf("Client.FollowProject() returned error: %v", err)
 	}
@@ -523,7 +523,7 @@ func TestClient_ListRecentBuilds(t *testing.T) {
 func TestClient_ListRecentBuildsForProject(t *testing.T) {
 	setup()
 	defer teardown()
-	mux.HandleFunc("/project/foo/bar/tree/master", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/project/myVcs/foo/bar/tree/master", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
 		testQueryIncludes(t, r, "filter", "running")
 		testQueryIncludes(t, r, "offset", "0")
@@ -533,7 +533,7 @@ func TestClient_ListRecentBuildsForProject(t *testing.T) {
 
 	call := fmt.Sprintf("Client.ListRecentBuilds(foo, bar, master, running, 10, 0)")
 
-	builds, err := client.ListRecentBuildsForProject("foo", "bar", "master", "running", 10, 0)
+	builds, err := client.ListRecentBuildsForProject("myVcs", "foo", "bar", "master", "running", 10, 0)
 	if err != nil {
 		t.Errorf("%s returned error: %v", call, err)
 	}
@@ -547,7 +547,7 @@ func TestClient_ListRecentBuildsForProject(t *testing.T) {
 func TestClient_ListRecentBuildsForProject_noBranch(t *testing.T) {
 	setup()
 	defer teardown()
-	mux.HandleFunc("/project/foo/bar", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/project/myVcs/foo/bar", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
 		testQueryIncludes(t, r, "filter", "running")
 		testQueryIncludes(t, r, "offset", "0")
@@ -557,7 +557,7 @@ func TestClient_ListRecentBuildsForProject_noBranch(t *testing.T) {
 
 	call := fmt.Sprintf("Client.ListRecentBuilds(foo, bar, , running, 10, 0)")
 
-	builds, err := client.ListRecentBuildsForProject("foo", "bar", "", "running", 10, 0)
+	builds, err := client.ListRecentBuildsForProject("myVcs", "foo", "bar", "", "running", 10, 0)
 	if err != nil {
 		t.Errorf("%s returned error: %v", call, err)
 	}
@@ -571,12 +571,12 @@ func TestClient_ListRecentBuildsForProject_noBranch(t *testing.T) {
 func TestClient_GetBuild(t *testing.T) {
 	setup()
 	defer teardown()
-	mux.HandleFunc("/project/jszwedko/foo/123", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/project/myVcs/jszwedko/foo/123", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
 		fmt.Fprint(w, `{"build_num": 123}`)
 	})
 
-	build, err := client.GetBuild("jszwedko", "foo", 123)
+	build, err := client.GetBuild("myVcs", "jszwedko", "foo", 123)
 	if err != nil {
 		t.Errorf("Client.GetBuild(jszwedko, foo, 123) returned error: %v", err)
 	}
@@ -590,12 +590,12 @@ func TestClient_GetBuild(t *testing.T) {
 func TestClient_ListBuildArtifacts(t *testing.T) {
 	setup()
 	defer teardown()
-	mux.HandleFunc("/project/jszwedko/foo/123/artifacts", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/project/myVcs/jszwedko/foo/123/artifacts", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
 		fmt.Fprint(w, `[{"Path": "/some/path"}]`)
 	})
 
-	artifacts, err := client.ListBuildArtifacts("jszwedko", "foo", 123)
+	artifacts, err := client.ListBuildArtifacts("myVcs", "jszwedko", "foo", 123)
 	if err != nil {
 		t.Errorf("Client.ListBuildArtifacts(jszwedko, foo, 123) returned error: %v", err)
 	}
@@ -609,12 +609,12 @@ func TestClient_ListBuildArtifacts(t *testing.T) {
 func TestClient_ListTestMetadata(t *testing.T) {
 	setup()
 	defer teardown()
-	mux.HandleFunc("/project/jszwedko/foo/123/tests", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/project/myVcs/jszwedko/foo/123/tests", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
 		fmt.Fprint(w, `{"tests": [{"name": "some test"}]}`)
 	})
 
-	metadata, err := client.ListTestMetadata("jszwedko", "foo", 123)
+	metadata, err := client.ListTestMetadata("myVcs", "jszwedko", "foo", 123)
 	if err != nil {
 		t.Errorf("Client.ListTestMetadata(jszwedko, foo, 123) returned error: %v", err)
 	}
@@ -628,12 +628,12 @@ func TestClient_ListTestMetadata(t *testing.T) {
 func TestClient_Build(t *testing.T) {
 	setup()
 	defer teardown()
-	mux.HandleFunc("/project/jszwedko/foo/tree/master", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/project/myVcs/jszwedko/foo/tree/master", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
 		fmt.Fprint(w, `{"build_num": 123}`)
 	})
 
-	build, err := client.Build("jszwedko", "foo", "master")
+	build, err := client.Build("myVcs", "jszwedko", "foo", "master")
 	if err != nil {
 		t.Errorf("Client.Build(jszwedko, foo, master) returned error: %v", err)
 	}
@@ -648,7 +648,7 @@ func TestClient_ParameterizedBuild(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/project/jszwedko/foo/tree/master", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/project/myVcs/jszwedko/foo/tree/master", func(w http.ResponseWriter, r *http.Request) {
 		testBody(t, r, `{"build_parameters":{"param":"foo"}}`)
 		testMethod(t, r, "POST")
 		fmt.Fprint(w, `{"build_num": 123}`)
@@ -658,7 +658,7 @@ func TestClient_ParameterizedBuild(t *testing.T) {
 		"param": "foo",
 	}
 
-	build, err := client.ParameterizedBuild("jszwedko", "foo", "master", params)
+	build, err := client.ParameterizedBuild("myVcs", "jszwedko", "foo", "master", params)
 	if err != nil {
 		t.Errorf("Client.Build(jszwedko, foo, master) returned error: %v", err)
 	}
@@ -673,7 +673,7 @@ func TestClient_BuildOpts(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/project/jszwedko/foo/tree/master", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/project/myVcs/jszwedko/foo/tree/master", func(w http.ResponseWriter, r *http.Request) {
 		testBody(t, r, `{"build_parameters":{"param":"foo"},"revision":"SHA"}`)
 		testMethod(t, r, "POST")
 		fmt.Fprint(w, `{"build_num": 123}`)
@@ -686,7 +686,7 @@ func TestClient_BuildOpts(t *testing.T) {
 		"revision": "SHA",
 	}
 
-	build, err := client.BuildOpts("jszwedko", "foo", "master", opts)
+	build, err := client.BuildOpts("myVcs", "jszwedko", "foo", "master", opts)
 	if err != nil {
 		t.Errorf("Client.Build(jszwedko, foo, master) returned error: %v", err)
 	}
@@ -748,12 +748,12 @@ func TestClient_BuildByProjectTag(t *testing.T) {
 func TestClient_RetryBuild(t *testing.T) {
 	setup()
 	defer teardown()
-	mux.HandleFunc("/project/jszwedko/foo/123/retry", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/project/myVcs/jszwedko/foo/123/retry", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
 		fmt.Fprint(w, `{"build_num": 124}`)
 	})
 
-	build, err := client.RetryBuild("jszwedko", "foo", 123)
+	build, err := client.RetryBuild("myVcs", "jszwedko", "foo", 123)
 	if err != nil {
 		t.Errorf("Client.RetryBuild(jszwedko, foo, 123) returned error: %v", err)
 	}
@@ -767,12 +767,12 @@ func TestClient_RetryBuild(t *testing.T) {
 func TestClient_CancelBuild(t *testing.T) {
 	setup()
 	defer teardown()
-	mux.HandleFunc("/project/jszwedko/foo/123/cancel", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/project/myVcs/jszwedko/foo/123/cancel", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
 		fmt.Fprint(w, `{"build_num": 123}`)
 	})
 
-	build, err := client.CancelBuild("jszwedko", "foo", 123)
+	build, err := client.CancelBuild("myVcs", "jszwedko", "foo", 123)
 	if err != nil {
 		t.Errorf("Client.CancelBuild(jszwedko, foo, 123) returned error: %v", err)
 	}
@@ -786,12 +786,12 @@ func TestClient_CancelBuild(t *testing.T) {
 func TestClient_ClearCache(t *testing.T) {
 	setup()
 	defer teardown()
-	mux.HandleFunc("/project/jszwedko/foo/build-cache", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/project/myVcs/jszwedko/foo/build-cache", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "DELETE")
 		fmt.Fprint(w, `{"status": "cache cleared"}`)
 	})
 
-	status, err := client.ClearCache("jszwedko", "foo")
+	status, err := client.ClearCache("myVcs", "jszwedko", "foo")
 	if err != nil {
 		t.Errorf("Client.ClearCache(jszwedko, foo) returned error: %v", err)
 	}
@@ -805,13 +805,13 @@ func TestClient_ClearCache(t *testing.T) {
 func TestClient_AddEnvVar(t *testing.T) {
 	setup()
 	defer teardown()
-	mux.HandleFunc("/project/jszwedko/foo/envvar", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/project/myVcs/jszwedko/foo/envvar", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
 		testBody(t, r, `{"name":"bar","value":"baz"}`)
 		fmt.Fprint(w, `{"name": "bar"}`)
 	})
 
-	status, err := client.AddEnvVar("jszwedko", "foo", "bar", "baz")
+	status, err := client.AddEnvVar("myVcs", "jszwedko", "foo", "bar", "baz")
 	if err != nil {
 		t.Errorf("Client.AddEnvVar(jszwedko, foo, bar, baz) returned error: %v", err)
 	}
@@ -825,13 +825,13 @@ func TestClient_AddEnvVar(t *testing.T) {
 func TestClient_ListEnvVars(t *testing.T) {
 	setup()
 	defer teardown()
-	mux.HandleFunc("/project/jszwedko/foo/envvar", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/project/myVcs/jszwedko/foo/envvar", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
 		testBody(t, r, "")
 		fmt.Fprint(w, `[{"name": "bar", "value":"xxxbar"}]`)
 	})
 
-	status, err := client.ListEnvVars("jszwedko", "foo")
+	status, err := client.ListEnvVars("myVcs", "jszwedko", "foo")
 	if err != nil {
 		t.Errorf("Client.ListEnvVars(jszwedko, foo) returned error: %v", err)
 	}
@@ -848,12 +848,12 @@ func TestClient_ListEnvVars(t *testing.T) {
 func TestClient_DeleteEnvVar(t *testing.T) {
 	setup()
 	defer teardown()
-	mux.HandleFunc("/project/jszwedko/foo/envvar/bar", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/project/myVcs/jszwedko/foo/envvar/bar", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "DELETE")
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	err := client.DeleteEnvVar("jszwedko", "foo", "bar")
+	err := client.DeleteEnvVar("myVcs", "jszwedko", "foo", "bar")
 	if err != nil {
 		t.Errorf("Client.DeleteEnvVar(jszwedko, foo, bar) returned error: %v", err)
 	}
@@ -862,13 +862,13 @@ func TestClient_DeleteEnvVar(t *testing.T) {
 func TestClient_AddSSHKey(t *testing.T) {
 	setup()
 	defer teardown()
-	mux.HandleFunc("/project/jszwedko/foo/ssh-key", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/project/myVcs/jszwedko/foo/ssh-key", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
 		testBody(t, r, `{"hostname":"example.com","private_key":"some-key"}`)
 		w.WriteHeader(http.StatusCreated)
 	})
 
-	err := client.AddSSHKey("jszwedko", "foo", "example.com", "some-key")
+	err := client.AddSSHKey("myVcs", "jszwedko", "foo", "example.com", "some-key")
 	if err != nil {
 		t.Errorf("Client.AddSSHKey(jszwedko, foo, example.com, some-key) returned error: %v", err)
 	}
@@ -983,7 +983,7 @@ func TestClient_CreateCheckoutKey(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/project/jszwedko/foo/checkout-key", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/project/myVcs/jszwedko/foo/checkout-key", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
 		testBody(t, r, `{"type":"github-user-key"}`)
 		fmt.Fprintf(w, `{
@@ -995,7 +995,7 @@ func TestClient_CreateCheckoutKey(t *testing.T) {
 		}`)
 	})
 
-	checkoutKey, err := client.CreateCheckoutKey("jszwedko", "foo", "github-user-key")
+	checkoutKey, err := client.CreateCheckoutKey("myVcs", "jszwedko", "foo", "github-user-key")
 	if err != nil {
 		t.Errorf("Client.CreateCheckoutKey(jszwedko, foo, github-user-key) returned error: %v", err)
 	}
@@ -1017,7 +1017,7 @@ func TestClient_GetCheckoutKey(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/project/jszwedko/foo/checkout-key/37:27:f7:68:85:43:46:d2:e1:30:83:8f:f7:1b:ad:c2", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/project/myVcs/jszwedko/foo/checkout-key/37:27:f7:68:85:43:46:d2:e1:30:83:8f:f7:1b:ad:c2", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
 		fmt.Fprintf(w, `{
 			"public_key": "some public key",
@@ -1028,7 +1028,7 @@ func TestClient_GetCheckoutKey(t *testing.T) {
 		}`)
 	})
 
-	checkoutKey, err := client.GetCheckoutKey("jszwedko", "foo", "37:27:f7:68:85:43:46:d2:e1:30:83:8f:f7:1b:ad:c2")
+	checkoutKey, err := client.GetCheckoutKey("myVcs", "jszwedko", "foo", "37:27:f7:68:85:43:46:d2:e1:30:83:8f:f7:1b:ad:c2")
 	if err != nil {
 		t.Errorf("Client.GetCheckoutKey(jszwedko, foo, 37:27:f7:68:85:43:46:d2:e1:30:83:8f:f7:1b:ad:c2) returned error: %v", err)
 	}
@@ -1049,12 +1049,12 @@ func TestClient_DeleteCheckoutKey(t *testing.T) {
 	setup()
 	defer teardown()
 
-	mux.HandleFunc("/project/jszwedko/foo/checkout-key/37:27:f7:68:85:43:46:d2:e1:30:83:8f:f7:1b:ad:c2", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/project/myVcs/jszwedko/foo/checkout-key/37:27:f7:68:85:43:46:d2:e1:30:83:8f:f7:1b:ad:c2", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "DELETE")
 		fmt.Fprintf(w, `{"message": "ok"}`)
 	})
 
-	err := client.DeleteCheckoutKey("jszwedko", "foo", "37:27:f7:68:85:43:46:d2:e1:30:83:8f:f7:1b:ad:c2")
+	err := client.DeleteCheckoutKey("myVcs", "jszwedko", "foo", "37:27:f7:68:85:43:46:d2:e1:30:83:8f:f7:1b:ad:c2")
 	if err != nil {
 		t.Errorf("Client.DeleteCheckoutKey(jszwedko, foo, 37:27:f7:68:85:43:46:d2:e1:30:83:8f:f7:1b:ad:c2) returned error: %v", err)
 	}

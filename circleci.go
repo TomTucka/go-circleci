@@ -385,7 +385,7 @@ func (c *Client) AddSSHUser(account, repo string, buildNum int) (*Build, error) 
 // project on the given branch.
 // Returns the new build information
 func (c *Client) Build(vcsType, account, repo, branch string) (*Build, error) {
-	return c.BuildOpts(account, repo, branch, nil)
+	return c.BuildOpts(vcsType, account, repo, branch, nil)
 }
 
 // ParameterizedBuild triggers a new parameterized build for the given
@@ -394,7 +394,7 @@ func (c *Client) Build(vcsType, account, repo, branch string) (*Build, error) {
 // Returns the new build information
 func (c *Client) ParameterizedBuild(vcsType, account, repo, branch string, buildParameters map[string]string) (*Build, error) {
 	opts := map[string]interface{}{"build_parameters": buildParameters}
-	return c.BuildOpts(account, repo, branch, opts)
+	return c.BuildOpts(vcsType, account, repo, branch, opts)
 }
 
 // BuildOpts triggeres a new build for the givent project on the given

@@ -1,4 +1,9 @@
 ## go-circleci
+[![GoDoc](https://godoc.org/github.com/tomtucka/go-circleci?status.svg)](http://godoc.org/github.com/tomtucka/go-circleci)
+[![Circle CI](https://circleci.com/gh/tomtucka/go-circleci.svg?style=svg)](https://circleci.com/gh/tomtucka/go-circleci)
+[![Go Report Card](https://goreportcard.com/badge/github.com/tomtucka/go-circleci)](https://goreportcard.com/report/github.com/tomtucka/go-circleci)
+[![coverage](https://gocover.io/_badge/github.com/tomtucka/go-circleci?0 "coverage")](http://gocover.io/github.com/tomtucka/go-circleci)
+
 
 Go library for interacting with [CircleCI's API](https://circleci.com/docs/api). Supports all current API endpoints allowing you do do things like:
 
@@ -6,6 +11,8 @@ Go library for interacting with [CircleCI's API](https://circleci.com/docs/api).
 * Get build details
 * Retry builds
 * Manipulate checkout keys, environment variables, and other settings for a project
+
+This project is forked from the orginal as it was no longer being maintained.
 
 **The CircleCI HTTP API response schemas are not well documented so please file an issue if you run into something that doesn't match up.**
 
